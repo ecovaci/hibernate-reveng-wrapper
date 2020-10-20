@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering SYSTEM "http://hibernate.org/dtd/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+    <schema-selection match-schema="C##DEV"/>
+
+    <type-mapping>
+        <sql-type jdbc-type="NUMERIC" hibernate-type="java.lang.Long"/>
+    </type-mapping>
+
+    <table name="COUNTRIES" schema="C##DEV">
+        <meta attribute="extra-annotations">@javax.persistence.Cacheable</meta>
+        <meta attribute="class-code">
+            @Override
+            public String toString() {
+            return "Country{" +
+            "countryId='" + countryId + '\'' +
+            ", region=" + region +
+            ", countryName='" + countryName + '\'' +
+            '}';
+            }
+        </meta>
+        <meta attribute="extra-import">org.hibernate.annotations.Type</meta>
+        <column name="COUNTRY_ID">
+            <meta attribute="extra-annotations">@Type(type = "char")</meta>
+            <meta attribute="overwrite-column">@Column(name = "COUNTRY_ID", unique = true, nullable = false, length = 2, columnDefinition = "CHAR")</meta>
+            <meta attribute="column-append-attr">columnDefinition = "CHAR"</meta>
+        </column>
+    </table>
+
+    <table name="EMPLOYEES" schema="C##DEV">
+        <meta attribute="extra-import">java.util.Objects</meta>
+        <meta attribute="class-description">
+            Javadoc for the EMPLOYEES class
+            @author eugen
+        </meta>
+        <meta attribute="class-code">@Override
+            public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Employee employee = (Employee) o;
+            return employeeId.equals(employee.employeeId);
+            }
+
+            @Override
+            public int hashCode() {
+            return Objects.hash(employeeId);
+            }
+        </meta>
+        <primary-key>
+
+            <!-- setting up a specific id generator for a table -->
+            <generator class="sequence">
+                <param name="sequence_name">EMPLOYEES_SEQ</param>
+            </generator>
+            <key-column name="EMPLOYEE_ID"/>
+        </primary-key>
+
+    </table>
+</hibernate-reverse-engineering>

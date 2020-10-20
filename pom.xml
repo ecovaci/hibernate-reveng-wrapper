@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>hibernate-reveng-wrapper</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>hibernate-reveng-wrapper</name>
+    <!-- FIXME change it to the project's website -->
+    <url>http://www.example.com</url>
+
+    <properties>
+        <!--Modify these accordingly -->
+        <reveng.output.location>/location/to/your/project/root/directory</reveng.output.location>
+        <reveng.packagename>your.java.package</reveng.packagename>
+
+        <!--If you don't use Oracle, change this accordingly-->
+        <ojdbc.version>19.7.0.0</ojdbc.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <commons-lang3.version>3.8</commons-lang3.version>
+        <hibernate.version>5.4.22.Final</hibernate.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>${ojdbc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-tools</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <!--mvn antrun:run@hbm2java -->
+                        <id>hbm2java</id>
+                        <phase>none</phase>
+                        <configuration>
+                            <target>
+                                <taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask"/>
+                                <hibernatetool templatepath="src/etc">
+                                    <classpath>
+                                        <fileset dir="${project.build.directory}">
+                                            <include name="**/*.jar"/>
+                                        </fileset>
+                                    </classpath>
+                                    <jdbcconfiguration
+                                            reversestrategy="org.hibernaterevengwrapper.CustomDelegatingReverseEngineeringStrategy"
+                                            revengfile="src/etc/hibernate.reveng.xml"
+                                            packagename="${reveng.packagename}" detectmanytomany="true"
+                                            propertyfile="src/etc/hibernate.properties" detectOptimisticLock="true"/>
+                                    <hbm2java destdir="${reveng.output.location}/src/main/java" jdk5="true"
+                                              ejb3="true"/>
+                                </hibernatetool>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-lang3</artifactId>
+                        <version>${commons-lang3.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.oracle.database.jdbc</groupId>
+                        <artifactId>ojdbc8</artifactId>
+                        <version>${ojdbc.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-tools</artifactId>
+                        <version>${hibernate.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>2.13.0</version>
+                <configuration>
+                    <directories>
+                        <directory>${reveng.output.location}</directory>
+                    </directories>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>
